@@ -6,7 +6,7 @@ A straightforward Client/Server Anticheat solution for Roblox, developed in a si
 
 ## ✨ Features
 
-TAC Anticheat is designed to detect and mitigate common exploits in Roblox games.
+TAC is designed to detect and mitigate common exploits in Roblox games.
 
 ### 🕹️ Movement Exploits
 - 💨 **SpeedHack Detection**
