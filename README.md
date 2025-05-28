@@ -9,16 +9,16 @@ A straightforward Client/Server Anticheat solution for Roblox, developed in a si
 TAC is designed to detect and mitigate common exploits in Roblox games.
 
 ### 🕹️ Movement Exploits
-- 💨 **SpeedHack Detection**
-- 🕊️ **Fly Detection**
-- 🤸 **Infinite Jump Detection**
-- 📍 **Teleportation Detection**
+-  **SpeedHack Detection**
+-  **Fly Detection**
+-  **Infinite Jump Detection**
+-  **Teleportation Detection**
 
 ### 🧰 Debugging/Reverse Engineering Tools
 - 🔍 **Dex (Explorer) Detection**
 
 ### 📢 Notifications & Logging
-- 📡 **Discord Webhook Integration** (for kicks/bans)
+-  **Discord Webhook Integration** (for kicks/bans)
 
 ---
 
