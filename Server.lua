@@ -1,12 +1,12 @@
 --[[
 
-								ooooooooooooo     .o.         .oooooo.
-								8'   888   `8     .888.       d8P'  `Y8b
-									888         .8"888.     888
-									888        .8' `888.    888
-									888       .88ooo8888.   888
-									888      .8'     `888.  `88b    ooo
-									o888o    o88o     o8888o  `Y8bood8P'
+								   ooooooooooooo     .o.         .oooooo.
+							           8'   888   `8     .888.       d8P'  `Y8b
+								       888         .8"888.     888
+								       888        .8' `888.    888
+								       888       .88ooo8888.   888
+							               888      .8'     `888.  `88b    ooo
+								       o888o    o88o     o8888o  `Y8bood8P'
 
 									  Tayia's Anticheat 1.0 [SERVER]
 								
