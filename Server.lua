@@ -21,7 +21,7 @@ Kick Reasons
 		S1G - Ground
 		S1S - Seated
 		S1H - Airborne
-		S1PS - Airborne, after landing
+		S1PS - Airborne again after landing
 		
 	S2 : JumpHackDetector
 		
