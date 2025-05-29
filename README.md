@@ -13,6 +13,7 @@ TAC is designed to detect and mitigate common exploits in Roblox games.
 ### 🕹️ Movement Exploits
 -  **SpeedHack Detection**
 -  **Fly Detection**
+-  **Lag-Switch**
 -  **Infinite Jump Detection**
 -  **Teleportation Detection**
 
