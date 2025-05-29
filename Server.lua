@@ -8,7 +8,7 @@
 									888      .8'     `888.  `88b    ooo
 									o888o    o88o     o8888o  `Y8bood8P'
 
-									  Tayia's Anticheat 1.0 [SERVER]
+									  Tayia's Anticheat 1.1 [SERVER]
 								
 						Tips : It's advised to test the anticheat, since if the variables below 
 							   nare not correctly set up for your game it may trigger false positives.
