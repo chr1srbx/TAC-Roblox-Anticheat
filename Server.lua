@@ -322,7 +322,6 @@ game.Players.PlayerAdded:Connect(function(player)
 		end
 
 		if CFramePositionDetector then
-			print(player.Name .. ": Initializing CFramePositionDetector") -- Confirming this module starts
 			task.spawn(function()
 				if not rootPart or not rootPart.Parent then
 					rootPart = character:WaitForChild("HumanoidRootPart", 5)
