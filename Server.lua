@@ -494,7 +494,7 @@ BanEvent.OnServerEvent:Connect(function(player, banreason)
 				},
 			},
 			["thumbnail"] = {
-				["url"] = playerAvatarUrl or "" -- Ensure URL is string even if nil
+				["url"] = playerAvatarUrl or ""
 			},
 			["timestamp"] = DateTime.now():ToIsoDate()
 		}
