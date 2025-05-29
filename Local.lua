@@ -20,14 +20,6 @@ if not game:IsLoaded() then
 	game.Loaded:Wait()
 end
 
-print("	ooooooooooooo     .o.         .oooooo.")
-print("	8'   888   `8     .888.       d8P'  `Y8b")
-print("	    888         .8\"888.     888")
-print("	    888        .8' `888.    888")
-print("	    888       .88ooo8888.   888")
-print("		  888      .8'     `888.  `88b    ooo")
-print("	   o888o    o88o     o8888o  `Y8bood8P'")
-
 --------------------------------------------------------------------------------------------------------------------
 
 
