@@ -1,6 +1,6 @@
 # 🛡️ Tayia's Anticheat
 
-A straightforward Client/Server Anticheat solution for Roblox, developed in a single day.
+A straightforward Client/Server Anticheat solution for Roblox.
 
 Testing Place : https://www.roblox.com/games/116869323919467/anticheat-attempt#ropro-quick-play
 
