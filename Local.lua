@@ -8,7 +8,7 @@
 								888      .8'     `888.  `88b    ooo
 								o888o    o88o     o8888o  `Y8bood8P'
 
-								 Tayia's Anticheat 1.0 [CLIENT]
+								 Tayia's Anticheat 1.1 [CLIENT]
 
 TIP : Rename this script, move it somewhere or just add it into something like your shooting script for example, 
 	  as its easy to find and delete via a DEX script. (same goes for remotes)
