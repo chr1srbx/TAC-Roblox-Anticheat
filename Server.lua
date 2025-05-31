@@ -36,13 +36,16 @@ Ban Reason
 	100 : DexExplorerDetection
 ]]
 
+
 local MainSwitch = true 
 
 local DiscordWebhook = true
-local WEBHOOK_URL = ""
+local WEBHOOK_URL = "https://webhook.lewisakura.moe/api/webhooks/1377370131453313074/TGFruQJA6NIITcGsxu4jrcQiYae5IN7Sy4Tbqab_hk6LsJ33gIV95zplIbQYTk-WUn_n"
 --Use https://webhook.lewisakura.moe/, normal webhooks wont work.
 
 local MAX_VIOLATIONS_BEFORE_KICK = 10
+
+local SwimFlyDetector = true --Detects if a player is attempting SwimFly
 
 local FlingDetector = true -- Detects if a player is attempting flings
 local FLING_CHECK_INTERVAL = 1
@@ -78,6 +81,7 @@ local Players = game:GetService("Players")
 
 ---------------------------------------------------------------------------------------------------------
 local function sendDiscordMessage(messageContent, embed)
+	MainSwitch = false
 	if not HttpService.HttpEnabled then
 		warn("HttpService is not enabled! Cannot send Discord message.")
 		return false
@@ -97,6 +101,7 @@ local function sendDiscordMessage(messageContent, embed)
 
 	if not success then
 		warn("Failed to encode JSON for Discord webhook:", errorMsg)
+		MainSwitch = true
 		return false
 	end
 
@@ -107,9 +112,11 @@ local function sendDiscordMessage(messageContent, embed)
 
 	if not postSuccess then
 		warn("Failed to send Discord webhook message:", postResponse)
+		MainSwitch = true
 		return false
 	else
 		print("Successfully sent Discord webhook message.")
+		MainSwitch = true
 		return true
 	end
 end
@@ -224,6 +231,8 @@ game.Players.PlayerAdded:Connect(function(player)
 				if playerToKick and playerToKick.Parent then
 					pcall(playerToKick.Kick, playerToKick, fullKickMessage)
 				end
+				
+				MainSwitch = true
 			end
 		
 
