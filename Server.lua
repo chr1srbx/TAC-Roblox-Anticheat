@@ -1,14 +1,14 @@
 --[[
 
 								ooooooooooooo     .o.         .oooooo.
-								8'   888   `8     .888.       d8P'  `Y8b
+								8'   888   8     .888.       d8P'  Y8b
 									888         .8"888.     888
-									888        .8' `888.    888
+									888        .8' 888.    888
 									888       .88ooo8888.   888
-									888      .8'     `888.  `88b    ooo
-									o888o    o88o     o8888o  `Y8bood8P'
+									888      .8'     888.  88b    ooo
+									o888o    o88o     o8888o  Y8bood8P'
 
-									  Tayia's Anticheat 1.1 [SERVER]
+									  Tayia's Anticheat 1.2 [SERVER]
 								
 						Tips : It's advised to test the anticheat, since if the variables below 
 							   nare not correctly set up for your game it may trigger false positives.
@@ -28,6 +28,8 @@
 	S2 : Infinte Jump Detection
 	
 	S3 : Noclip Detection
+	
+	S4 : Fling Detection
 		
 
 Ban Reason
@@ -35,24 +37,26 @@ Ban Reason
 ]]
 
 local DiscordWebhook = true
-local WEBHOOK_URL = "WEBHOOK HERE"
+local WEBHOOK_URL = "https://webhook.lewisakura.moe/api/webhooks/1377370131453313074/TGFruQJA6NIITcGsxu4jrcQiYae5IN7Sy4Tbqab_hk6LsJ33gIV95zplIbQYTk-WUn_n"
 --Use https://webhook.lewisakura.moe/, normal webhooks wont work.
 
 local MAX_VIOLATIONS_BEFORE_KICK = 10
 
+local FlingDetection = true -- Detects if a player is attempting flings
+local FLING_CHECK_INTERVAL = 1
+local VELOCITY_THRESHOLD = 150
+local MAX_ANGULAR_VELOCITY_THRESHOLD = 60 -- Max radians per second for rotational velocity (tune this carefully, test before publishing.)
 
 local JumpHackDetector = true -- Detects if the player has Infinite jump.
 
-
-local NoclipDetector = true -- Detects noclip attempts. (Rarely can trigger a false positive, VIOLATION_COUNT is increased by 0.5)
-
+local NoclipDetector = true -- Detects noclip attempts. (Rarely can trigger a false positive)
 
 local FlyHackDetector = true -- This variable is declared but not used in the provided script segment.
 local MAX_FLY_TIME = 1 -- This variable is declared but not used in the provided script segment.
 
 local CFramePositionDetector = true --[[ This option will prevent a cheater from using Speed,Teleportation, FakeLag and similar cheats.
                                     This may bring false positives if the variables below aren't set properly.
-                                    Anticheat may trigger if the player's ping is too high, since this is a server check. ]]
+                                    Anticheat may trigger if the player's ping is too high (over 600ms), since this is a server check. ]]
 local MAX_ALLOWED_GROUND_SPEED = 26 --[[ You will need to change this if a player equips a speed coil or something like a powerup.
 										for ex:
 										
@@ -158,20 +162,31 @@ end
 
 ---------------------------------------------------------------------------------------------------------
 
+local function isGrounded(humanoid)
+	return humanoid.FloorMaterial ~= Enum.Material.Air
+end
 
 ---------------------------------------------------------------------------------------------------------
-playerFallData = {}
+local playerData = {}
+local playerFallData = {}
+
 game.Players.PlayerAdded:Connect(function(player)
+	playerData[player.UserId] = {
+		violations = 0,
+	}
+
 	player.CharacterAdded:Connect(function(character)
 
-		local VIOLATION_COUNT = 0
 		local humanoid = character:WaitForChild("Humanoid")
 		local rootPart = character:WaitForChild("HumanoidRootPart")
 
 		local lastMidAirJumpSetback = 0
-		local midAirJumpSetbackCooldown = 0.5
+		local midAirJumpSetbackCooldown = 1
 
 		local function executeKickProcedure(playerToKick, kickReasonCode, diagnosticMessage)
+			local currentViolations = (playerData[playerToKick.UserId] and playerData[playerToKick.UserId].violations) or "N/A"
+			local fullDiagnosticMessage = string.format("%s (Total Violations: %s)", diagnosticMessage, tostring(currentViolations))
+
 			local fullKickMessage = "TAC: " .. kickReasonCode
 			if DiscordWebhook then
 				local playerAvatarUrl = "DEFAULT_AVATAR_URL_IF_ERROR" -- Fallback
@@ -184,9 +199,9 @@ game.Players.PlayerAdded:Connect(function(player)
 					["description"] = "**" .. playerToKick.Name .. "** (ID: " .. playerToKick.UserId .. ") has been kicked by the anti-cheat.",
 					["color"] = 16711680,
 					["fields"] = {
-						{["name"] = "Kick Reason Code", ["value"] = "`" .. fullKickMessage .. "`", ["inline"] = true},
+						{["name"] = "Kick Reason Code", ["value"] = "" .. fullKickMessage .. "", ["inline"] = true},
 						{["name"] = "Account Age", ["value"] = playerToKick.AccountAge .. " days", ["inline"] = true},
-						{["name"] = "Details", ["value"] = diagnosticMessage, ["inline"] = false}
+						{["name"] = "Details", ["value"] = fullDiagnosticMessage, ["inline"] = false}
 					},
 					["thumbnail"] = {["url"] = playerAvatarUrl},
 					["timestamp"] = DateTime.now():ToIsoDate()
@@ -194,11 +209,71 @@ game.Players.PlayerAdded:Connect(function(player)
 				local successSend, errSend = pcall(sendDiscordMessage, "", embedData)
 				if not successSend then warn("executeKickProcedure: Failed to send Discord message. Error: " .. tostring(errSend)) end
 			end
-			warn("Kicking " .. playerToKick.Name .. " (ID: " .. playerToKick.UserId .. "). Reason: " .. fullKickMessage .. ". Details: " .. diagnosticMessage)
-			-- Ensure player is still connected before kicking
+			warn("Kicking " .. playerToKick.Name .. " (ID: " .. playerToKick.UserId .. "). Reason: " .. fullKickMessage .. ". Details: " .. fullDiagnosticMessage)
 			if playerToKick and playerToKick.Parent then
 				pcall(playerToKick.Kick, playerToKick, fullKickMessage)
 			end
+			
+			if playerData[playerToKick.UserId] then
+				playerData[playerToKick.UserId].violations = 0 
+			end
+		end
+
+		if FlingDetection then
+			local kickDetail = ""
+			local lastPosition = rootPart.Position
+			local lastTimeCheck = tick()
+			task.spawn(function()
+				while character and character.Parent and humanoid and humanoid.Health > 0 and rootPart and rootPart.Parent and player and player.Parent and playerData[player.UserId] do
+					task.wait(FLING_CHECK_INTERVAL) 
+
+					if not (character and character.Parent and humanoid and humanoid.Health > 0 and rootPart and rootPart.Parent and player and player.Parent and playerData[player.UserId]) then
+						break
+					end
+
+					local currentTime = tick()
+					local currentPosition = rootPart.Position
+					local currentVelocity = rootPart.AssemblyLinearVelocity
+					local currentAngularVelocity = rootPart.AssemblyAngularVelocity 
+
+					local displacement = (currentPosition - lastPosition)
+					local timeElapsed = currentTime - lastTimeCheck
+					if timeElapsed <= 0.001 then 
+						timeElapsed = FLING_CHECK_INTERVAL
+					end
+
+					if currentVelocity.Magnitude > VELOCITY_THRESHOLD then
+						local verticalVelocityRatio = 0
+						if currentVelocity.Magnitude > 0 then
+							verticalVelocityRatio = math.abs(currentVelocity.Y) / currentVelocity.Magnitude
+						end
+
+						if verticalVelocityRatio < 0.85 then 
+							playerData[player.UserId].violations = playerData[player.UserId].violations + 3
+							kickDetail = string.format("Velocity magnitude: %.2f studs/s (Threshold: %.2f). Violations: %d", currentVelocity.Magnitude, VELOCITY_THRESHOLD, playerData[player.UserId].violations)
+							warn(player.Name .. " " .. kickDetail)
+							player:LoadCharacter()
+						end
+					end
+
+					if currentAngularVelocity.Magnitude > MAX_ANGULAR_VELOCITY_THRESHOLD then
+						playerData[player.UserId].violations = playerData[player.UserId].violations + 3
+						kickDetail = string.format("Angular velocity magnitude: %.2f rad/s (Threshold: %.2f). Violations: %d", currentAngularVelocity.Magnitude, MAX_ANGULAR_VELOCITY_THRESHOLD, playerData[player.UserId].violations)
+						warn(player.Name .. " " .. kickDetail)
+						player:LoadCharacter()
+					end
+
+					if playerData[player.UserId].violations >= MAX_VIOLATIONS_BEFORE_KICK then
+						if player and player.Parent then
+							executeKickProcedure(player, "S4", kickDetail)
+						end
+						break 
+					end
+
+					lastPosition = currentPosition
+					lastTimeCheck = currentTime
+				end
+			end)
 		end
 
 		if NoclipDetector then
@@ -213,10 +288,10 @@ game.Players.PlayerAdded:Connect(function(player)
 
 				local oldPosition = rootPart.CFrame.Position
 
-				while character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent do
+				while character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent and playerData[player.UserId] do
 					task.wait()
 
-					if not (character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent) then
+					if not (character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent and playerData[player.UserId]) then
 						break
 					end
 
@@ -235,26 +310,32 @@ game.Players.PlayerAdded:Connect(function(player)
 
 					local raycastResult = workspace:Raycast(oldPosition, movementVector.Unit * movementMagnitude, raycastParams)
 
+
 					if raycastResult and raycastResult.Instance and raycastResult.Instance.CanCollide then
-						VIOLATION_COUNT = VIOLATION_COUNT + 0.5
-						local diagnosticMsg = string.format("Noclip. Hit: %s. Movement: %.2f studs. Violations: %.1f", raycastResult.Instance.Name, movementMagnitude, VIOLATION_COUNT)
-						warn(player.Name .. ": " .. diagnosticMsg)
+						local raycastCheck = raycastResult.Instance.Parent
+						if not raycastCheck:FindFirstChild("Humanoid") then
+							playerData[player.UserId].violations = playerData[player.UserId].violations + 0.5
+							local diagnosticMsg = string.format("Noclip. Hit: %s. Movement: %.2f studs. Violations: %.1f", raycastResult.Instance.Name, movementMagnitude, playerData[player.UserId].violations)
+							warn(player.Name .. ": " .. diagnosticMsg)
 
-						local currentOrientationY = select(2, rootPart.CFrame:ToOrientation())
-						rootPart.CFrame = CFrame.new(oldPosition - (movementVector.Unit * 0.5)) * CFrame.Angles(0, currentOrientationY, 0)
-						rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-						rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+							local currentOrientationY = select(2, rootPart.CFrame:ToOrientation())
+							rootPart.CFrame = CFrame.new(oldPosition - (movementVector.Unit * 0.5)) * CFrame.Angles(0, currentOrientationY, 0)
+							rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+							rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
 
-						task.wait(0.1)
+							task.wait(0.1)
 
-						if VIOLATION_COUNT >= MAX_VIOLATIONS_BEFORE_KICK then
-							if player and player.Parent then
-								executeKickProcedure(player, "S3", diagnosticMsg)
+							oldPosition = rootPart.CFrame.Position
+
+							if playerData[player.UserId].violations >= MAX_VIOLATIONS_BEFORE_KICK then
+								if player and player.Parent then
+									executeKickProcedure(player, "S3", diagnosticMsg)
+								end
+								break 
 							end
-							break 
 						end
 					else
-						oldPosition = currentPosition -- Valid movement or no collision
+						oldPosition = currentPosition
 					end
 				end
 			end)
@@ -267,11 +348,12 @@ game.Players.PlayerAdded:Connect(function(player)
 				fallStartTime = 0,
 				fallStartHeight = initialCharHeight,
 				lastKnownGroundPosition = rootPart.Position,
-				lastLandedTime = 0
+				lastLandedTime = 0,
+				recentlyLanded = false
 			}
 
 			humanoid.StateChanged:Connect(function(oldState, newState)
-				if not character or not character.Parent or not humanoid or humanoid.Health <= 0 or not player or not player.Parent then
+				if not character or not character.Parent or not humanoid or humanoid.Health <= 0 or not player or not player.Parent or not playerData[player.UserId] or not playerFallData[player.UserId] then
 					return
 				end
 
@@ -286,42 +368,68 @@ game.Players.PlayerAdded:Connect(function(player)
 					newState ~= Enum.HumanoidStateType.Flying and
 					newState ~= Enum.HumanoidStateType.Swimming and
 					newState ~= Enum.HumanoidStateType.Seated then
-					playerFallData.lastKnownGroundPosition = rootPart.Position
+					playerFallData[player.UserId].lastKnownGroundPosition = rootPart.Position
 				end
 
+				if newState == Enum.HumanoidStateType.Landed or newState == Enum.HumanoidStateType.Running or newState == Enum.HumanoidStateType.RunningNoPhysics then
+					playerFallData[player.UserId].lastLandedTime = tick()
+					playerFallData[player.UserId].recentlyLanded = true 
+					task.delay(0.25, function()
+						if playerFallData[player.UserId] then  playerFallData[player.UserId].recentlyLanded = false end
+					end)
+				end
+
+				if isGrounded(humanoid) then 
+					if not playerFallData[player.UserId].recentlyLanded then
+						playerFallData[player.UserId].lastLandedTime = tick()
+						playerFallData[player.UserId].recentlyLanded = true
+						task.delay(0.25, function()
+							if playerFallData[player.UserId] then  playerFallData[player.UserId].recentlyLanded = false end
+						end)
+					end
+					playerFallData[player.UserId].lastKnownGroundPosition = rootPart.Position
+				end
+
+				local landingGracePeriod = 0.25 -- This is effectively handled by 'recentlyLanded' and the cooldown now
 				if oldState == Enum.HumanoidStateType.Freefall and newState == Enum.HumanoidStateType.Jumping then
-					if tick() - (playerFallData.lastLandedTime or 0) > 0.25 then 
+					if tick() - (playerFallData[player.UserId].lastLandedTime or 0) > landingGracePeriod then 
 						if tick() - lastMidAirJumpSetback > midAirJumpSetbackCooldown then
-							lastMidAirJumpSetback = tick()
-							local diagnostic = "Detected mid-air jump (Jump from Freefall state without recent landing)."
-							print(string.format("Player %s: %s. lastLandedTime: %.2f, tick(): %.2f", player.Name, diagnostic, (playerFallData.lastLandedTime or 0), tick()))
-							VIOLATION_COUNT = VIOLATION_COUNT + 2
+							local verticalVelocity = rootPart.AssemblyLinearVelocity.Y
+							-- Use the recentlyLanded flag you defined for playerFallData
+							if verticalVelocity >= 0.5  and not playerFallData[player.UserId].recentlyLanded then
+								lastMidAirJumpSetback = tick()
+								local diagnostic = "Detected mid-air jump (Jump from Freefall state without recent landing)."
+								print(string.format("Player %s: %s. lastLandedTime: %.2f, tick(): %.2f, Violations: %d", player.Name, diagnostic, (playerFallData[player.UserId].lastLandedTime or 0), tick(), playerData[player.UserId].violations + 1))
 
-							local targetPositionY = (playerFallData.lastKnownGroundPosition and playerFallData.lastKnownGroundPosition.Y) or (currentHeight - 10)
-							local targetPosition = Vector3.new(rootPart.Position.X, targetPositionY, rootPart.Position.Z)
+								playerData[player.UserId].violations = playerData[player.UserId].violations + 1
 
-							local currentOrientationY = select(2, rootPart.CFrame:ToOrientation())
-							rootPart.CFrame = CFrame.new(targetPosition) * CFrame.Angles(0, currentOrientationY, 0)
-							rootPart.AssemblyLinearVelocity = Vector3.new(0, -30, 0)
-							rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-							humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+								local targetPositionY = (playerFallData[player.UserId].lastKnownGroundPosition and playerFallData[player.UserId].lastKnownGroundPosition.Y) or (currentHeight - 10)
+								local targetPosition = Vector3.new(rootPart.Position.X, targetPositionY, rootPart.Position.Z)
 
-							if VIOLATION_COUNT >= MAX_VIOLATIONS_BEFORE_KICK then
-								executeKickProcedure(player, "S2", diagnostic)
+								local currentOrientationY = select(2, rootPart.CFrame:ToOrientation())
+								rootPart.CFrame = CFrame.new(targetPosition) * CFrame.Angles(0, currentOrientationY, 0)
+								rootPart.AssemblyLinearVelocity = Vector3.new(0, -30, 0)
+								rootPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+								humanoid:ChangeState(Enum.HumanoidStateType.Freefall)
+
+								if playerData[player.UserId].violations >= MAX_VIOLATIONS_BEFORE_KICK then
+									executeKickProcedure(player, "S2", diagnostic)
+								end
+								return
 							end
-							return --
 						else
-							print(string.format("Player %s: Mid-air jump detected but on cooldown. lastLandedTime: %.2f", player.Name, (playerFallData.lastLandedTime or 0)))
+							print(string.format("Player %s: Mid-air jump detected but on cooldown. lastLandedTime: %.2f", player.Name, (playerFallData[player.UserId].lastLandedTime or 0)))
 						end
 					else
 						print(string.format("Player %s: Ignored potential mid-air jump due to very recent landing (tick - lastLandedTime: %.2fs). OS: %s, NS: %s",
-							player.Name, tick()-(playerFallData.lastLandedTime or 0), oldState.Name, newState.Name))
+							player.Name, tick()-(playerFallData[player.UserId].lastLandedTime or 0), oldState.Name, newState.Name))
 					end
 				end
 			end)			
 		end
 
 		if CFramePositionDetector then
+			print(player.Name .. ": Initializing CFramePositionDetector") 
 			task.spawn(function()
 				if not rootPart or not rootPart.Parent then
 					rootPart = character:WaitForChild("HumanoidRootPart", 5)
@@ -336,10 +444,10 @@ game.Players.PlayerAdded:Connect(function(player)
 				local previousHumanoidStateType = humanoid:GetState()
 				local justLandedGrace = false
 
-				while character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent do
+				while character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent and playerData[player.UserId] do
 					task.wait(CFRAME_CHECK_INTERVAL)
 
-					if not (character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent) then
+					if not (character and character.Parent and rootPart and rootPart.Parent and humanoid and humanoid.Health > 0 and player and player.Parent and playerData[player.UserId]) then
 						break 
 					end
 
@@ -360,18 +468,16 @@ game.Players.PlayerAdded:Connect(function(player)
 						previousTick = currentTick
 						previousHumanoidStateType = currentHumanoidStateType
 						justLandedGrace = false 
-						VIOLATION_COUNT = math.max(0, VIOLATION_COUNT - 0.5)
+						playerData[player.UserId].violations = math.max(0, playerData[player.UserId].violations - 0.5) 
 						continue 
 					end
 
 					if actualDeltaTime <= 1/1000 then 
-						lastPosition = currentPosition -- Update position even if delta is too small to avoid false positive on next valid check
-						previousTick = currentTick -- Update tick to ensure next delta isn't huge
+						lastPosition = currentPosition 
+						previousTick = currentTick 
 						previousHumanoidStateType = currentHumanoidStateType
 						continue
 					end
-
-					previousTick = currentTick -- Moved this here, so actualDeltaTime is always currentTick - previousTick from last processed frame
 
 					local displacement = currentPosition - lastPosition
 					local speedToEvaluate
@@ -390,14 +496,16 @@ game.Players.PlayerAdded:Connect(function(player)
 						currentMaxAllowedSpeedToUse = currentMaxAllowedSpeedToUse * HUMANOID_SITTING_MULTIPLIER
 					end
 
-					if speedToEvaluate > currentMaxAllowedSpeedToUse + 2 then 
-						VIOLATION_COUNT = VIOLATION_COUNT + 1
+					previousTick = currentTick
+
+					if speedToEvaluate > currentMaxAllowedSpeedToUse + 2 then
+						playerData[player.UserId].violations = playerData[player.UserId].violations + 1
 						local diagnosticText = string.format("Speed: %.2f studs/s (Max: %.2f), State: %s. Δt: %.3fs. Violations: %d/%d.",
-							speedToEvaluate, currentMaxAllowedSpeedToUse, currentHumanoidStateType.Name, actualDeltaTime, VIOLATION_COUNT, MAX_VIOLATIONS_BEFORE_KICK)
+							speedToEvaluate, currentMaxAllowedSpeedToUse, currentHumanoidStateType.Name, actualDeltaTime, playerData[player.UserId].violations, MAX_VIOLATIONS_BEFORE_KICK)
 						warn(player.Name .. " violated speed. " .. diagnosticText)
 
 
-						if VIOLATION_COUNT >= MAX_VIOLATIONS_BEFORE_KICK then
+						if playerData[player.UserId].violations >= MAX_VIOLATIONS_BEFORE_KICK then
 							local kickReasonPrefix = "S1"
 							local kickReasonSuffix = ""
 							if humanoid.Sit then
@@ -421,7 +529,7 @@ game.Players.PlayerAdded:Connect(function(player)
 							currentPosition = lastPosition 
 						end
 					else
-						VIOLATION_COUNT = math.max(0, VIOLATION_COUNT - 0.03) 
+						playerData[player.UserId].violations = math.max(0, playerData[player.UserId].violations - 0.02) 
 					end
 
 					lastPosition = currentPosition
@@ -430,6 +538,15 @@ game.Players.PlayerAdded:Connect(function(player)
 			end)
 		end
 	end)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+	if playerData[player.UserId] then
+		playerData[player.UserId] = nil
+	end
+	if playerFallData[player.UserId] then
+		playerFallData[player.UserId] = nil
+	end
 end)
 
 --------------------------------------------------------------------------------------------------------
@@ -444,11 +561,11 @@ KickEvent.OnServerEvent:Connect(function(player, kickreason)
 		local embedData = {
 			["title"] = "Player Kicked (Client Request)",
 			["description"] = "**" .. player.Name .. "** (ID: " .. player.UserId .. ") has been kicked by the anti-cheat (client detection).",
-			["color"] = 16711680, -- Red
+			["color"] = 16711680,
 			["fields"] = {
 				{
 					["name"] = "Kick Reason Code",
-					["value"] = "`" .. kickreason .. "`",
+					["value"] = "" .. kickreason .. "",
 					["inline"] = true
 				},
 				{
@@ -483,7 +600,7 @@ BanEvent.OnServerEvent:Connect(function(player, banreason)
 			["fields"] = {
 				{
 					["name"] = "Ban Reason Code",
-					["value"] = "`" .. banreason .. "`",
+					["value"] = "" .. banreason .. "",
 					["inline"] = true
 				},
 				{
@@ -500,18 +617,29 @@ BanEvent.OnServerEvent:Connect(function(player, banreason)
 		sendDiscordMessage("", embedData)
 	end
 
-	local duration = 99999999999
-	local config: BanConfigType = {
+	local config = {
 		UserIds = { player.UserId },
-		Duration = duration,
-		DisplayReason = tostring(banreason),
-		PrivateReason = tostring(banreason),
+		Duration = 99999999999,
+		DisplayReason = "TAC: " .. tostring(banreason),
+		PrivateReason = "TAC: " .. tostring(banreason) .. " (Client Detection ID: 100)",
 		ExcludeAltAccounts = false,
 		ApplyToUniverse = true
 	}
 
+	-- Use BanAsync with the table directly as per Roblox documentation
 	local success, err = pcall(function()
-		return Players:BanAsync(config)
+		Players:BanAsync(player.UserId, config.PrivateReason, config.DisplayReason, config.Duration)
+		local banOptions = {
+			Reason = config.PrivateReason,
+			DisplayReason = config.DisplayReason,
+			Duration = config.Duration,
+		}
+		return Players:Ban(player.UserId, banOptions)
 	end)
-	print(success, err)
+
+	if success then
+		print("Successfully banned " .. player.Name .. " (ID: " .. player.UserId .. ") for reason: " .. banreason)
+	else
+		warn("Failed to ban " .. player.Name .. " (ID: " .. player.UserId .. "). Error: " .. tostring(err))
+	end
 end)
