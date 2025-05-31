@@ -17,6 +17,7 @@ TAC is designed to detect and mitigate common exploits in Roblox games.
 -  **Infinite Jump Detection**
 -  **Teleportation Detection**
 -  **Noclip Detection**
+-  **Fling Detection**
 
 ### 🧰 Debugging/Reverse Engineering Tools
 - 🔍 **Dex (Explorer) Detection**
