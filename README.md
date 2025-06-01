@@ -47,4 +47,4 @@ Activity : ![image](https://github.com/user-attachments/assets/36490eab-7e3f-4c5
 
 1. **Insert the Module:**
    - Place the TAC scripts into `StarterPlayerScripts` or `ServerScriptService`.
-   - Make 2 RemoteEvents for ban and kick, then rename them in the server script.
+   - Make 3 RemoteEvents for ban, kick and sanity check, then rename them in the server script.
