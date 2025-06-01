@@ -4,7 +4,8 @@ A straightforward Client/Server Anticheat solution for Roblox.
 
 Testing Place : https://www.roblox.com/games/116869323919467/anticheat-attempt#ropro-quick-play
 
-If you wish for me to implement this anticheat into your game, shoot me a DM on discord : c___s
+If you wish for me to implement this anticheat into your game, with custom detections tailored to your game, shoot me a DM on discord : c___s
+
 ---
 
 ## ✨ Features
