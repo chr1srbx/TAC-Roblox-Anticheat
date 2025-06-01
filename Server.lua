@@ -40,7 +40,7 @@ Ban Reason
 local MainSwitch = true 
 
 local DiscordWebhook = true
-local WEBHOOK_URL = "https://webhook.lewisakura.moe/api/webhooks/1378366363642495047/-lxNLydUvAjwFB2cM90fkzqKJYdeC1g43_NSgI12vd_3bSTi48DlAtKEV0vyNuWtKfzi"
+local WEBHOOK_URL = "WEBHOOK_HERE"
 --Use https://webhook.lewisakura.moe/, normal webhooks wont work.
 
 local MAX_VIOLATIONS_BEFORE_KICK = 10
