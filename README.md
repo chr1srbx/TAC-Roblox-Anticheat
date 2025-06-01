@@ -27,6 +27,8 @@ TAC is designed to detect and mitigate common exploits in Roblox games.
 ### 📢 Notifications & Logging
 -  **Discord Webhook Integration** (for kicks/bans)
 
+### 📝 Sanity Checks
+
 ---
 
 ## 🚀 Overview
