@@ -8,7 +8,7 @@
 								888      .8'     `888.  `88b    ooo
 								o888o    o88o     o8888o  `Y8bood8P'
 
-								 Tayia's Anticheat 1.1 [CLIENT]
+								 	Tayia's Anticheat 1.2 [CLIENT]
 
 TIP : Rename this script, move it somewhere or just add it into something like your shooting script for example, 
 	  as its easy to find and delete via a DEX script. (same goes for remotes)
@@ -22,11 +22,9 @@ end
 
 --------------------------------------------------------------------------------------------------------------------
 
+local DexExplorerDetection = true --This will detect mostly every explorer script. (Works on : Wave, AWP etc. | Doesn't work : Xeno)
 
-local DexExplorerDetection = true --This won't detect every explorer script.
-
-
---------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------\
 
 local name = tostring(math.random())
 local Chat = game:GetService("Chat")
@@ -34,6 +32,7 @@ Instance.new("BoolValue", Chat).Name = name
 local t = setmetatable({}, {__mode="v"})
 
 while task.wait() do
+	game.ReplicatedStorage.send:FireServer()
 	if DexExplorerDetection then
 		t[1] = {}
 		t[2] = Chat:FindFirstChild(name)
@@ -44,10 +43,11 @@ while task.wait() do
 		end
 		if t[2] ~= nil then
 			game.ReplicatedStorage.sync:FireServer(100)
-			task.wait(2)
-				while true do
-				end
 		end
 	end
+
 end
+
+
+
 
