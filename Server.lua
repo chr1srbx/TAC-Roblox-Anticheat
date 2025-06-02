@@ -39,9 +39,10 @@ Ban Reason
 ]]
 
 local MainSwitch = true 
+local TPCheater = true -- teleports cheater to https://www.roblox.com/games/5629760647/Cheater-hell (you MUST allow 3rd part teleports.)
 
 local DiscordWebhook = true
-local WEBHOOK_URL = "WEBHOOK_HERE"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1378366363642495047/-lxNLydUvAjwFB2cM90fkzqKJYdeC1g43_NSgI12vd_3bSTi48DlAtKEV0vyNuWtKfzi"
 --Use https://webhook.lewisakura.moe/, normal webhooks wont work.
 
 local MAX_VIOLATIONS_BEFORE_KICK = 10
@@ -78,11 +79,11 @@ local ClientCheck = ReplicatedStorage:WaitForChild("send")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
 
 ---------------------------------------------------------------------------------------------------------
 local playerData = {}
 local playerFallData = {}
-local executeKickProcedure
 local clientCheckTime = tick()
 ---------------------------------------------------------------------------------------------------------
 
@@ -182,28 +183,7 @@ local function isGrounded(humanoid)
 	return humanoid.FloorMaterial ~= Enum.Material.Air
 end
 ---------------------------------------------------------------------------------------------------------
-local function allEntitiesValid(pCharacter, pHumanoid, pRootPart, pPlayer)
-	return pCharacter and pCharacter.Parent and
-		pHumanoid and pHumanoid.Parent and pHumanoid.Health > 0 and -- Added pHumanoid.Parent check
-		pRootPart and pRootPart.Parent and
-		pPlayer and pPlayer.Parent
-end
-
-local function incrementAndCheckKick(pPlayer, increment, kickReasonCode, baseDiagnosticDetail)
-	if not playerData[pPlayer.UserId] then return false end
-
-	playerData[pPlayer.UserId].violations = playerData[pPlayer.UserId].violations + increment
-
-	if playerData[pPlayer.UserId].violations >= MAX_VIOLATIONS_BEFORE_KICK then
-		if pPlayer and pPlayer.Parent and MainSwitch then
-			executeKickProcedure(pPlayer, kickReasonCode, baseDiagnosticDetail)
-			return true 
-		end
-	end
-	return false 
-end
-
-executeKickProcedure = function(playerToKick, kickReasonCode, diagnosticMessage, ban)
+local function executeKickProcedure(playerToKick, kickReasonCode, diagnosticMessage, ban)
 	MainSwitch = false
 	local currentViolations = (playerData[playerToKick.UserId] and playerData[playerToKick.UserId].violations) or "N/A"
 	local fullDiagnosticMessage = string.format("%s (Total Violations at kick: %.1f)", diagnosticMessage, tonumber(currentViolations) or 0)
@@ -247,7 +227,9 @@ executeKickProcedure = function(playerToKick, kickReasonCode, diagnosticMessage,
 	end
 	warn("Kicking " .. playerToKick.Name .. " (ID: " .. playerToKick.UserId .. "). Reason: " .. fullKickMessage .. ". Details: " .. fullDiagnosticMessage)
 	MainSwitch = true
-
+	
+	TeleportService:Teleport(5629760647, playerToKick)
+	
 	if ban then
 		local duration = 99999999
 		local config: BanConfigType = {
@@ -282,6 +264,29 @@ executeKickProcedure = function(playerToKick, kickReasonCode, diagnosticMessage,
 			warn("Failed to kick player " .. playerToKick.Name .. ": " .. kickError)
 		end
 	end
+
+	
+end
+
+local function allEntitiesValid(pCharacter, pHumanoid, pRootPart, pPlayer)
+	return pCharacter and pCharacter.Parent and
+		pHumanoid and pHumanoid.Parent and pHumanoid.Health > 0 and
+		pRootPart and pRootPart.Parent and
+		pPlayer and pPlayer.Parent
+end
+
+local function incrementAndCheckKick(pPlayer, increment, kickReasonCode, baseDiagnosticDetail)
+	if not playerData[pPlayer.UserId] then return false end
+
+	playerData[pPlayer.UserId].violations = playerData[pPlayer.UserId].violations + increment
+
+	if playerData[pPlayer.UserId].violations >= MAX_VIOLATIONS_BEFORE_KICK then
+		if pPlayer and pPlayer.Parent and MainSwitch then
+			executeKickProcedure(pPlayer, kickReasonCode, baseDiagnosticDetail)
+			return true 
+		end
+	end
+	return false 
 end
 
 ---------------------------------------------------------------------------------------------------------
@@ -292,7 +297,7 @@ game.Players.PlayerAdded:Connect(function(player)
 	}
 	player.CharacterAdded:Connect(function(character)
 		if MainSwitch then 
-			
+
 			local humanoid = character:WaitForChild("Humanoid")
 			local rootPart = character:WaitForChild("HumanoidRootPart")
 
@@ -306,7 +311,7 @@ game.Players.PlayerAdded:Connect(function(player)
 							clientCheckTime = 9999999999999
 							break
 						end
-						
+
 						task.wait(FLING_CHECK_INTERVAL) 
 						if not (allEntitiesValid(character, humanoid, rootPart, player) and playerData[player.UserId]) then break end
 
@@ -526,10 +531,10 @@ game.Players.PlayerAdded:Connect(function(player)
 							speedToEvaluate = displacement.Magnitude / actualDeltaTime
 							currentMaxAllowedSpeedToUse = MAX_ALLOWED_GROUND_SPEED
 						end
-						
+
 						if humanoid.Sit then currentMaxAllowedSpeedToUse = currentMaxAllowedSpeedToUse * HUMANOID_SITTING_MULTIPLIER end
 						previousTick = currentTick
-						
+
 						currentHumanoidStateType = humanoid:GetState()
 						if speedToEvaluate > currentMaxAllowedSpeedToUse + 2 and currentHumanoidStateType ~= Enum.HumanoidStateType.Swimming then
 							local kickReasonSuffix = ""
@@ -628,7 +633,7 @@ BanEvent.OnServerEvent:Connect(function(player, banreason)
 		}
 		sendDiscordMessage("", embedData)
 	end
-	
+
 	local duration = 99999999
 	local config: BanConfigType = {
 		UserIds = { player.UserId },
