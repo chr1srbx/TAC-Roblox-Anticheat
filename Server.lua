@@ -39,7 +39,7 @@ Ban Reason
 ]]
 
 local MainSwitch = true 
-local TPCheater = true -- teleports cheater to https://www.roblox.com/games/5629760647/Cheater-hell (you MUST allow 3rd part teleports.)
+local TPCheater = true -- teleports cheater to https://www.roblox.com/games/5629760647/Cheater-hell (you MUST allow 3rd party teleports.)
 
 local DiscordWebhook = true
 local WEBHOOK_URL = "WEBHOOK_HERE"
