@@ -11,7 +11,8 @@
 								 	Tayia's Anticheat 1.2 [CLIENT]
 
 TIP : Rename this script, move it somewhere or just add it into something like your shooting script for example, 
-	  as its easy to find and delete via a DEX script. (same goes for remotes)
+	  as its easy to find and delete via a DEX script. (same goes for remotes), sanity check is present, but 
+	  don't rely too much on it.
 ]]
 
 
