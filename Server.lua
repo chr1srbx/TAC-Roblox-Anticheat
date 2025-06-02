@@ -192,7 +192,6 @@ local function IsPlayerSwimming(character)
 end
 
 ---------------------------------------------------------------------------------------------------------
--- Helper function to check if essential entities are valid
 local function allEntitiesValid(pCharacter, pHumanoid, pRootPart, pPlayer)
 	return pCharacter and pCharacter.Parent and
 		pHumanoid and pHumanoid.Parent and pHumanoid.Health > 0 and -- Added pHumanoid.Parent check
@@ -200,8 +199,6 @@ local function allEntitiesValid(pCharacter, pHumanoid, pRootPart, pPlayer)
 		pPlayer and pPlayer.Parent
 end
 
--- Helper function to increment violations and check for kick
--- Returns true if player was kicked, false otherwise
 local function incrementAndCheckKick(pPlayer, increment, kickReasonCode, baseDiagnosticDetail)
 	if not playerData[pPlayer.UserId] then return false end
 
