@@ -42,7 +42,7 @@ local MainSwitch = true
 local TPCheater = true -- teleports cheater to https://www.roblox.com/games/5629760647/Cheater-hell (you MUST allow 3rd part teleports.)
 
 local DiscordWebhook = true
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1378366363642495047/-lxNLydUvAjwFB2cM90fkzqKJYdeC1g43_NSgI12vd_3bSTi48DlAtKEV0vyNuWtKfzi"
+local WEBHOOK_URL = "WEBHOOK_HERE"
 --Use https://webhook.lewisakura.moe/, normal webhooks wont work.
 
 local MAX_VIOLATIONS_BEFORE_KICK = 10
