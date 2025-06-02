@@ -392,7 +392,7 @@ game.Players.PlayerAdded:Connect(function(player)
 						if raycastResult and raycastResult.Instance and raycastResult.Instance.CanCollide then
 							local raycastCheck = raycastResult.Instance.Parent
 							if raycastResult.Instance.Name == "Terrain" then
-								break
+								continue
 							end
 
 							if not raycastCheck:FindFirstChild("Humanoid") then
