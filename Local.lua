@@ -23,7 +23,7 @@ end
 
 --------------------------------------------------------------------------------------------------------------------
 
-local DexExplorerDetection = true --This will detect mostly every explorer script. (Works on : Wave, AWP etc. | Doesn't work : Xeno)
+local DexExplorerDetection = true --This will detect mostly every explorer script, but it can trigger as a false positive with some heavy scripts. (Works on : Wave, AWP etc. | Doesn't work : Xeno)
 
 --------------------------------------------------------------------------------------------------------------------\
 
