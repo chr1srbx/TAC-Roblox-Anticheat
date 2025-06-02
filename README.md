@@ -25,7 +25,8 @@ TAC is designed to detect and mitigate common exploits in Roblox games.
 - 🔍 **Dex (Explorer) Detection** (Works on paid exploits, and free, except xeno)
 
 ### 📢 Notifications & Logging
--  **Discord Webhook Integration** (for kicks/bans)
+-  **Discord Webhook Integration** (for kicks/bans) ![image](https://github.com/user-attachments/assets/ff165b67-1f3e-4908-b57e-bc93363acf23)
+
 
 ### 📝 Sanity Checks
 
