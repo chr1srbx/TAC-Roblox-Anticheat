@@ -35,6 +35,7 @@
 
 Ban Reason
 	100 : DexExplorerDetection
+        200 : No response from the client anticheat.
 ]]
 
 local MainSwitch = true 
