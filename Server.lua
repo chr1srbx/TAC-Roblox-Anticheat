@@ -67,7 +67,7 @@ local MAX_ALLOWED_GROUND_SPEED = 25 --[[ You will need to change this if a playe
 										you lose your powerup
 										change back to 17
 										]]
-local MAX_ALLOWED_AIR_HORIZONTAL_SPEED_FACTOR = 1.5 -- Multiplier for ground speed to determine max horizontal air speed (e.g., 1.0 for no extra horizontal speed, 1.5 for 50% more)
+local MAX_ALLOWED_AIR_HORIZONTAL_SPEED_FACTOR = 2 -- Multiplier for ground speed to determine max horizontal air speed (e.g., 1.0 for no extra horizontal speed, 1.5 for 50% more)
 local CFRAME_CHECK_INTERVAL = 0.5 -- The lower the more accurate, but more heavy on the server. Recommended to keep between 0.5-1.5 for the best results.
 local HUMANOID_SITTING_MULTIPLIER = 1 -- If the humanoid is sitting in a car, etc. If this isn't needed, set it to 1.
 ---------------------------------------------------------------------------------------------------------
