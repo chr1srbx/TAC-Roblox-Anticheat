@@ -40,7 +40,7 @@ This anticheat system operates on both the **client and server** to provide a ba
 ## 📝Realtime Performance
 
 Memory : ![image](https://github.com/user-attachments/assets/a7582e6b-444d-47dc-b02a-1492817d002a)
-Activity : ![image](https://github.com/user-attachments/assets/36490eab-7e3f-4c5b-b705-43cc482dcb5b) When triggered consecutively its 0.5%, on idle its between 0.050 - 0.150
+Activity : ![image](https://github.com/user-attachments/assets/36490eab-7e3f-4c5b-b705-43cc482dcb5b) When triggered consecutively wtih 1-10 ccu its 0.5%, on idle its between 0.050 - 0.150
 
 
 ## 🛠️ Setup
