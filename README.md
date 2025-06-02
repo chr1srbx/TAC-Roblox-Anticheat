@@ -22,7 +22,7 @@ TAC is designed to detect and mitigate common exploits in Roblox games.
 -  **Fling Detection**
 
 ### 🧰 Debugging/Reverse Engineering Tools
-- 🔍 **Dex (Explorer) Detection** (Works on paid exploits, and free, except xeno)
+- 🔍 **Dex (Explorer) Detection** (Works on paid exploits, and free, except xeno cause they messed something up in their poorly made executor)
 
 ### 📢 Notifications & Logging
 -  **Discord Webhook Integration** (for kicks/bans) ![image](https://github.com/user-attachments/assets/ff165b67-1f3e-4908-b57e-bc93363acf23)
