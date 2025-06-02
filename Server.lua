@@ -181,16 +181,6 @@ end
 local function isGrounded(humanoid)
 	return humanoid.FloorMaterial ~= Enum.Material.Air
 end
-
-local function IsPlayerSwimming(character)
-	if not character then return false end
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
-		return humanoid:GetState() == Enum.HumanoidStateType.Swimming
-	end
-	return false
-end
-
 ---------------------------------------------------------------------------------------------------------
 local function allEntitiesValid(pCharacter, pHumanoid, pRootPart, pPlayer)
 	return pCharacter and pCharacter.Parent and
