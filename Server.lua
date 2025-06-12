@@ -8,7 +8,7 @@
 							               888      .8'     888.   88b    ooo
 								      o888o    o88o     o8888o  Y8bood8P'
 
-									  Tayia's Anticheat 1.3 [SERVER]
+									  Tayia's Anticheat 1.4 [SERVER]
 								
 						Tips : It's advised to test the anticheat, since if the variables below 
 							   nare not correctly set up for your game it may trigger false positives.
@@ -35,7 +35,7 @@
 
 Ban Reason
 	100 : DexExplorerDetection
-        200 : No response from the client anticheat.
+    200 : No response from the client anticheat.
 ]]
 
 local MainSwitch = true 
@@ -227,9 +227,9 @@ local function executeKickProcedure(playerToKick, kickReasonCode, diagnosticMess
 	end
 	warn("Kicking " .. playerToKick.Name .. " (ID: " .. playerToKick.UserId .. "). Reason: " .. fullKickMessage .. ". Details: " .. fullDiagnosticMessage)
 	MainSwitch = true
-	
+
 	TeleportService:Teleport(5629760647, playerToKick)
-	
+
 	if ban then
 		local duration = 99999999
 		local config: BanConfigType = {
@@ -265,7 +265,7 @@ local function executeKickProcedure(playerToKick, kickReasonCode, diagnosticMess
 		end
 	end
 
-	
+
 end
 
 local function allEntitiesValid(pCharacter, pHumanoid, pRootPart, pPlayer)
@@ -294,7 +294,9 @@ end
 game.Players.PlayerAdded:Connect(function(player)
 	playerData[player.UserId] = {
 		violations = 0,
+		isSeated = false,
 	}
+
 	player.CharacterAdded:Connect(function(character)
 		if MainSwitch then 
 
@@ -384,6 +386,7 @@ game.Players.PlayerAdded:Connect(function(player)
 						if raycastResult and raycastResult.Instance and raycastResult.Instance.CanCollide then
 							local raycastCheck = raycastResult.Instance.Parent
 							if raycastResult.Instance.Name == "Terrain" then
+								oldPosition = currentPosition 
 								continue
 							end
 
@@ -532,13 +535,17 @@ game.Players.PlayerAdded:Connect(function(player)
 							currentMaxAllowedSpeedToUse = MAX_ALLOWED_GROUND_SPEED
 						end
 
-						if humanoid.Sit then currentMaxAllowedSpeedToUse = currentMaxAllowedSpeedToUse * HUMANOID_SITTING_MULTIPLIER end
+						if playerData[player.UserId] and playerData[player.UserId].isSeated then
+							currentMaxAllowedSpeedToUse = currentMaxAllowedSpeedToUse * HUMANOID_SITTING_MULTIPLIER
+						end
+
 						previousTick = currentTick
 
 						currentHumanoidStateType = humanoid:GetState()
 						if speedToEvaluate > currentMaxAllowedSpeedToUse + 2 and currentHumanoidStateType ~= Enum.HumanoidStateType.Swimming then
 							local kickReasonSuffix = ""
-							if humanoid.Sit then kickReasonSuffix = "S" 
+							-- MODIFIED: Use the reliable isSeated status for flagging
+							if playerData[player.UserId] and playerData[player.UserId].isSeated then kickReasonSuffix = "S" 
 							elseif currentHumanoidStateType == Enum.HumanoidStateType.Freefall or currentHumanoidStateType == Enum.HumanoidStateType.Flying then kickReasonSuffix = "H"  
 							elseif previousHumanoidStateType == Enum.HumanoidStateType.Freefall and currentHumanoidStateType ~= Enum.HumanoidStateType.Freefall then kickReasonSuffix = "PS"
 							else kickReasonSuffix = "G" end
@@ -655,5 +662,22 @@ BanEvent.OnServerEvent:Connect(function(player, banreason)
 
 	if not success then
 		warn("Failed to ban " .. player.Name .. " (ID: " .. player.UserId .. "). Error: " .. tostring(err))
+	end
+end)
+
+RunService.Heartbeat:Connect(function()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if playerData[player.UserId] and player.Character then
+			local data = playerData[player.UserId]
+			local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+
+			if humanoid then
+				local isCurrentlySeated = humanoid.SeatPart ~= nil
+
+				if data.isSeated ~= isCurrentlySeated then
+					data.isSeated = isCurrentlySeated
+				end
+			end
+		end
 	end
 end)
