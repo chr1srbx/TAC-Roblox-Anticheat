@@ -17,38 +17,40 @@ TIP : Rename this script, move it somewhere or just add it into something like y
 
 
 
-if not game:IsLoaded() then
-	game.Loaded:Wait()
+
+if not game[(("Is" .. "Loaded"))](game) then
+	game[(string.reverse("dedaol"))]:Wait()
 end
 
---------------------------------------------------------------------------------------------------------------------
+local _s = true --This will detect mostly every explorer script. (Works on : Wave, AWP etc. | Doesn't work : Xeno) (dexdetection)
 
-local DexExplorerDetection = true --This will detect mostly every explorer script, but it can trigger as a false positive with some heavy scripts. (Works on : Wave, AWP etc. | Doesn't work : Xeno)
+local o = tostring(math.random())
+local w = game:GetService(string.char(67,104,97,116))
+Instance.new((string.char(66,111,111,108,86,97,108,117,101)), w).Name = o
 
---------------------------------------------------------------------------------------------------------------------\
+local z = setmetatable({}, {__mode = "\118"})
 
-local name = tostring(math.random())
-local Chat = game:GetService("Chat")
-Instance.new("BoolValue", Chat).Name = name 
-local t = setmetatable({}, {__mode="v"})
+local function zz()
+	local a = "se".."nd"
+	return game.ReplicatedStorage[a]
+end
 
-while task.wait() do
-	game.ReplicatedStorage.send:FireServer()
-	if DexExplorerDetection then
-		t[1] = {}
-		t[2] = Chat:FindFirstChild(name)
-		while t[1] ~= nil do
-			t[3] = string.rep("ab", 1024*2)
-			t[3] = nil
-			task.wait()
+local function ee()
+	return game.ReplicatedStorage[(string.reverse("cnyS"))]
+end
+
+while (function() return task.wait() end)() do
+	zz():FireServer()
+	if (_s == not false) then
+		z[1] = (function(...) return {} end)()
+		z[2] = w:FindFirstChild(o)
+		while (not not z[1]) do
+			z[3] = ("a".."b"):rep(bit32.lshift(1024, 1))
+			z[3] = nil
+			for _ = 1,1 do task["wait"]() end
 		end
-		if t[2] ~= nil then
-			game.ReplicatedStorage.sync:FireServer(100)
+		if z[2] then
+			ee():FireServer(0x64)
 		end
 	end
-
 end
-
-
-
-
