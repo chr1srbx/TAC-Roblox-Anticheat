@@ -1,0 +1,3 @@
+local TAC = require(game.ServerScriptService:WaitForChild("TAC"))
+
+TAC.initialize()
