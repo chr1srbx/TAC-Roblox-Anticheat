@@ -8,15 +8,12 @@
 								888      .8'     `888.  `88b    ooo
 								o888o    o88o     o8888o  `Y8bood8P'
 
-								 	Tayia's Anticheat 1.2 [CLIENT]
+								 	Tayia's Anticheat 1.3 [CLIENT]
 
 TIP : Rename this script, move it somewhere or just add it into something like your shooting script for example, 
 	  as its easy to find and delete via a DEX script. (same goes for remotes), sanity check is present, but 
 	  don't rely too much on it, as it can be hooked/tampered with.
 ]]
-
-
-
 
 if not game:IsLoaded() then
 	game.Loaded:Wait()
@@ -34,7 +31,7 @@ Instance.new("BoolValue", Chat).Name = name
 local t = setmetatable({}, {__mode="v"})
 
 while task.wait() do
-	game.ReplicatedStorage.send:FireServer()
+	game.ReplicatedStorage.Send:FireServer(0)
 	if DexExplorerDetection then
 		t[1] = {}
 		t[2] = Chat:FindFirstChild(name)
@@ -44,7 +41,7 @@ while task.wait() do
 			task.wait()
 		end
 		if t[2] ~= nil then
-			game.ReplicatedStorage.sync:FireServer(100)
+			game.ReplicatedStorage.Send:FireServer(1)
 		end
 	end
 
