@@ -50,5 +50,6 @@ Activity : ![image](https://github.com/user-attachments/assets/36490eab-7e3f-4c5
 ## 🛠️ Setup
 
 1. **Insert the Scripts:**
-   - Place the TAC scripts into `StarterPlayerScripts` or `ServerScriptService`.
-2. **Make 3 RemoteEvents** for ban, kick and sanity check, then rename them in the server script.
+   - Place the TAC Local script into `StarterPlayerScripts`.
+   - Place the TACLoader and TAC into  `ServerScriptService`
+2. **Make 1 RemoteEvent** called "Send", If you rename it, rename it in both TAC and TAC local.
