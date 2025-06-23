@@ -31,7 +31,7 @@ TAC helps detect and mitigate **common exploits** used in Roblox games:
   ![Webhook Example](https://github.com/user-attachments/assets/ff165b67-1f3e-4908-b57e-bc93363acf23)
 
 ### 🧠 Sanity Checks
-- (Simple sanityc check, I can make it customizable based on your game needs)
+- (Simple sanity check between client and server, I can make it customizable based on your game needs)
 
 ---
 
