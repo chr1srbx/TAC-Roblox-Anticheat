@@ -63,12 +63,14 @@ TAC helps detect and mitigate **common exploits** used in Roblox games:
 
 ## 📍 Games Using TAC
 
-### ✅ [Downhill Battles](https://www.roblox.com/games/4838844130/Downhill-Battles) (Heavily Modified Version)
+### ✅ [Downhill Battles](https://www.roblox.com/games/4838844130/Downhill-Battles) (Heavily Modified Version of TAC)
 
 **Before TAC:**
+
 ![Before](https://github.com/user-attachments/assets/3d598af8-1a44-46ac-8547-a6afe751bb43)
 
 **After TAC:**
+
 ![After](https://github.com/user-attachments/assets/8cc6e7bb-9277-4871-8c93-5706358365ac)
 
 ---
