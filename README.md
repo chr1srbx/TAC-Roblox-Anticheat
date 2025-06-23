@@ -86,5 +86,5 @@ TAC is built for:
 
 ## 🤝 Credits
 
-Created with ❤️ by **Tayia**  
+Created with ❤️ by **chris**  
 DM for collabs, questions, or custom detections: `c___s` on Discord
