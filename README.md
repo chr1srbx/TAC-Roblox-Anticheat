@@ -1,61 +1,88 @@
-# 🛡️ Tayia's Anticheat
+# 🛡️ Tayia's Anticheat (TAC)
 
-A straightforward Client/Server Anticheat solution for Roblox.
+A lightweight and effective **Client/Server Anticheat** solution for Roblox.
 
-Testing Place : https://www.roblox.com/games/116869323919467/anticheat-attempt#ropro-quick-play
+> 💻 **Test Game:**  
+> [Try it here on Roblox](https://www.roblox.com/games/116869323919467/anticheat-attempt#ropro-quick-play)
 
-If you are interested in implementing this anticheat into your game with custom detections and tweaks tailored to your game, add me and shoot me a DM on discord : c___s
+> 💬 **If you are interested in implementing this anticheat into your game with custom detections and tweaks tailored to your game :**  
+> DM me on Discord: **c___s**
 
 ---
 
 ## ✨ Features
 
-TAC is designed to detect and mitigate common exploits in Roblox games.
+TAC helps detect and mitigate **common exploits** used in Roblox games:
 
-### 🕹️ Movement Exploits
--  **SpeedHack Detection**
--  **Fly Detection**
--  **Lag-Switch**
--  **Infinite Jump Detection**
--  **Teleportation Detection**
--  **Noclip Detection**
--  **Fling Detection**
+### 🎮 Movement Exploit Detection
+- 🚀 Speed Hack
+- 🕊️ Fly
+- 🌐 Teleport
+- 🔁 Infinite Jump
+- 🧱 Noclip
+- 💥 Fling
+- ⏱️ Lag Switch
 
-### 🧰 Debugging/Reverse Engineering Tools
-- 🔍 **Dex (Explorer) Detection** (Works on paid exploits, and free, except xeno cause they messed something up in their poorly made executor)
+### 🧪 Debugging/Tool Detection
+- 🔍 Dex Explorer (Supports most executors except poorly built ones like Xeno)
 
 ### 📢 Notifications & Logging
--  **Discord Webhook Integration** (for kicks/bans) ![image](https://github.com/user-attachments/assets/ff165b67-1f3e-4908-b57e-bc93363acf23)
+- 📬 **Discord Webhook** support for automatic kicks/bans  
+  ![Webhook Example](https://github.com/user-attachments/assets/ff165b67-1f3e-4908-b57e-bc93363acf23)
 
-
-### 📝 Sanity Checks
+### 🧠 Sanity Checks
+- (More info to come — customizable based on your game needs)
 
 ---
-## 📍 Games used in: 
 
-- (HEAVILY MODIFIED) [Downhill Battles ](https://www.roblox.com/games/4838844130/Downhill-Battles)
-- Pre-Implementation of TAC : 
-![image](https://github.com/user-attachments/assets/3d598af8-1a44-46ac-8547-a6afe751bb43)
-- Post-Implementation of TAC :
-![image](https://github.com/user-attachments/assets/8cc6e7bb-9277-4871-8c93-5706358365ac)
+## 🛠️ Setup Instructions
+
+1. **Place Scripts:**
+   - 🧩 `TAC Local` → `StarterPlayerScripts`
+   - ⚙️ `TAC` and `TACLoader` → `ServerScriptService`
+
+2. **Create RemoteEvent:**
+   - Add a `RemoteEvent` called **Send** in `ReplicatedStorage`
+   - If renamed, update references in both **TAC** and **TAC Local**
+
+---
+
+## 📈 Realtime Performance
+
+- **Idle Usage:** `0.050 - 0.150%`  
+- **Triggered w/ 1-10 CCU:** `0.5%`
+
+> 🧠 Lightweight enough for any game
+
+**Memory Snapshot:**  
+![Memory](https://github.com/user-attachments/assets/a7582e6b-444d-47dc-b02a-1492817d002a)  
+**Activity Snapshot:**  
+![Activity](https://github.com/user-attachments/assets/36490eab-7e3f-4c5b-b705-43cc482dcb5b)
+
+---
+
+## 📍 Games Using TAC
+
+### ✅ [Downhill Battles](https://www.roblox.com/games/4838844130/Downhill-Battles) (Heavily Modified Version)
+
+**Before TAC:**
+![Before](https://github.com/user-attachments/assets/3d598af8-1a44-46ac-8547-a6afe751bb43)
+
+**After TAC:**
+![After](https://github.com/user-attachments/assets/8cc6e7bb-9277-4871-8c93-5706358365ac)
 
 ---
 
 ## 🚀 Overview
 
-This anticheat system operates on both the **client and server** to provide a basic layer of security against common cheating methods. It aims to be a **lightweight** and **easy-to-integrate** solution for Roblox developers.
+TAC is built for:
+- 🧠 **Simplicity** – plug and play
+- ⚡ **Performance** – very low overhead
+- 🔒 **Security** – detects a wide range of exploit behaviors
 
 ---
 
-## 📝Realtime Performance
+## 🤝 Credits
 
-Memory : ![image](https://github.com/user-attachments/assets/a7582e6b-444d-47dc-b02a-1492817d002a)
-Activity : ![image](https://github.com/user-attachments/assets/36490eab-7e3f-4c5b-b705-43cc482dcb5b) When triggered consecutively wtih 1-10 ccu its 0.5%, on idle its between 0.050 - 0.150
-
-
-## 🛠️ Setup
-
-1. **Insert the Scripts:**
-   - Place the TAC Local script into `StarterPlayerScripts`.
-   - Place the TACLoader and TAC into  `ServerScriptService`
-2. **Make 1 RemoteEvent** called "Send", If you rename it, rename it in both TAC and TAC local.
+Created with ❤️ by **Tayia**  
+DM for collabs, questions, or custom detections: `c___s` on Discord
